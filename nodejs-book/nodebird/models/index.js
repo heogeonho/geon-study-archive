@@ -11,7 +11,23 @@ const sequelize = new Sequelize(
 
 db.sequelize = sequelize;
 
-const basename = path.basename()
+const basename = path.basename(__filename);
+fs
+  .readdirSync(__dirname) // 현재 모든 파일 조회
+  .filter(file => {
+    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file));
+    console.log(file, model.name);
+    db[model.name] = model;
+    model.initiate(sequelize);
+  });
 
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
 module.exports = db;
