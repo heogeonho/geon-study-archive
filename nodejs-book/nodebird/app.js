@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const path = require('path');
 const session = require('express-session');
 const nunjucks = require('nunjucks');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv');           // .env 파일 process.env 로 먄드는 역할
 const passport = require('passport');
 
 dotenv.config();
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(session({
+app.use(session({                   // express-session 미들웨어
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
@@ -44,9 +44,9 @@ app.use(session({
     httpOnly: true,
     secure: false,
   },
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+}));                                // passport 미들웨어 (아래) 는 세션 미들웨어 다음에 와야 함
+app.use(passport.initialize());     // 미들웨어: req 객체에 passport 설정 심고
+app.use(passport.session());        // 미들웨어: req.session 객제에 passport 정보 저장
 
 app.use('/', pageRouter);
 app.use('/auth' , authRouter);
